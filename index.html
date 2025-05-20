@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Berlandbor MediaPlayer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <button id="menuToggle">☰</button>
+
+  <aside id="sidebar" class="hidden">
+    <h2>Меню</h2>
+    <input type="file" id="fileInput" accept=".txt,.m3u">
+    <input type="text" id="urlInput" placeholder="URL плейлиста (.m3u)">
+    <button onclick="loadPlaylistFromUrl()">Загрузить по ссылке</button>
+    <button onclick="clearAutoload()">🗑 Очистить плейлист</button>
+    <button onclick="exportPlaylist()">⬇ Экспорт</button>
+    <select id="groupFilter">
+      <option value="">Все группы</option>
+    </select>
+  </aside>
+
+  <main>
+    <h1>Berlandbor MediaPlayer</h1>
+    <h2>↖️ Загрузите плейлист .m3u через ☰ меню...</h2>
+    <div id="playlistGrid" class="grid"></div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

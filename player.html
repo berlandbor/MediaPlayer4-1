@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Berlandbor MediaPlayer</title>
+  <link rel="stylesheet" href="player.css" />
+</head>
+<body>
+   <div class="container">
+
+        <img id="logo" src="" alt="logo" hidden />
+
+
+
+    <div id="player" class="player-container"></div>
+    <h1 id="title">Загрузка...</h1>
+
+    <div id="spinner" class="spinner" hidden></div>
+    <div id="bufferingText" class="buffering-text" hidden>
+      <span id="bufferingMessage">Буферизация...</span>
+      <span id="qualityBadge"></span>
+    </div>
+    <div id="error" class="error-msg"></div>
+
+    <div class="nav">
+ <button class="back-button" onclick="location.href='index.html'">🔙 к плейлисту</button>
+    <button id="fullscreenBtn">↕️ full page</button><hr>
+      <button onclick="goTo(-1)">◀ Предыдущий</button>
+      <button onclick="goTo(1)">Следующий ▶</button>
+   </div><hr>
+            <h1>Berlandbor MediaPlayer</h1>
+    <audio id="alertSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2634eebd7d.mp3?filename=alert-7393.mp3" preload="auto"></audio>
+  </div>
+
+  <!-- Плавающие кнопки -->
+  <button id="diagBtn" class="diag-fab" title="Диагностика">📊</button>
+  <button id="shareBtn" class="diag-fab" title="Поделиться">🔗</button>
+
+  <!-- Модальное окно диагностики -->
+  <div id="diagModal" class="diag-modal hidden">
+    <div class="diag-content">
+      <h3>Диагностика</h3>
+      <div id="streamStats">
+        <div>Скорость: <span id="bitrate">-</span> кбит/с</div>
+        <div>Пинг: <span id="serverPing">-</span> мс</div>
+        <div>Сервер: <span id="serverStatus">-</span></div>
+        <div>Буфер: <span id="buffer">-</span> сек</div>
+        <div style="font-size:12px; color:#aaa;">
+          Средняя: <span id="bitrateAvg">-</span>,
+          Макс: <span id="bitrateMax">-</span>,
+          Мин: <span id="bitrateMin">-</span>
+        </div>
+      </div>
+      <div id="bitrateAlert" style="color:#ff4444; font-weight:bold;"></div>
+      <canvas id="bitrateGraph" width="300" height="100"></canvas>
+      <canvas id="pingGraph" width="300" height="100"></canvas><hr>
+      <button onclick="document.getElementById('diagModal').classList.add('hidden')">❌</button>
+    </div>
+  </div>
+
+  <!-- Модальное окно "Поделиться" -->
+  <div id="shareModal" class="diag-modal hidden">
+    <div class="diag-content">
+      <h3>Ссылка на стрим</h3>
+      <input id="shareLink" type="text" readonly style="width: 100%; padding: 6px;" />
+      <button onclick="copyShareLink()">Скопировать</button>
+      <button onclick="document.getElementById('shareModal').classList.add('hidden')" style="margin-left: 10px;">Закрыть</button>
+    </div>
+  </div>
+
+  <script src="player.js"></script>
+</body>
+</html>
