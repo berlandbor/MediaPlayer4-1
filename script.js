@@ -26,23 +26,32 @@ window.onload = () => {
 fileInput.addEventListener("change", handleFile);
 groupFilter.addEventListener("change", renderGrid);
 
-// ===== Проверка доступности канала =====
+// ===== Новый способ проверки потока через <video>/<audio> =====
 async function checkStream(url) {
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 3000);
+  return new Promise((resolve) => {
+    const el = document.createElement(url.match(/\.(mp3|aac|m4a)$/i) ? "audio" : "video");
 
-    await fetch(url, {
-      method: "HEAD",
-      mode: "no-cors",
-      signal: controller.signal
-    });
+    el.src = url;
+    el.preload = "metadata";
+    el.muted = true;
 
-    clearTimeout(timeout);
-    return true;
-  } catch {
-    return false;
-  }
+    const timeout = setTimeout(() => {
+      el.src = "";
+      resolve(false);
+    }, 4000);
+
+    el.onloadedmetadata = () => {
+      clearTimeout(timeout);
+      el.src = "";
+      resolve(true);
+    };
+
+    el.onerror = () => {
+      clearTimeout(timeout);
+      el.src = "";
+      resolve(false);
+    };
+  });
 }
 
 // ===== Обработка загрузки файла =====
@@ -59,7 +68,7 @@ function handleFile(e) {
   sidebar.classList.remove("visible");
 }
 
-// ===== Обработка загрузки по ссылке =====
+// ===== Загрузка плейлиста по URL =====
 function loadPlaylistFromUrl() {
   const url = urlInput.value.trim();
   if (!url) return alert("Введите ссылку на плейлист.");
@@ -76,7 +85,7 @@ function loadPlaylistFromUrl() {
     .catch(err => alert("Не удалось загрузить плейлист: " + err.message));
 }
 
-// ===== Парсинг + проверка доступности =====
+// ===== Парсинг и проверка доступности =====
 async function parseAndCheck(text, fileName) {
   const parsed = parsePlaylist(text, fileName);
 
@@ -109,7 +118,7 @@ function exportPlaylist() {
   URL.revokeObjectURL(url);
 }
 
-// ===== Парсинг плейлиста =====
+// ===== Парсинг .m3u или .txt =====
 function parsePlaylist(text, fileName) {
   const isM3U = fileName.endsWith(".m3u") || fileName.endsWith(".m3u8");
   const lines = text.split(/\r?\n/);
@@ -178,7 +187,7 @@ function updateGroupFilter() {
   });
 }
 
-// ===== Отрисовка сетки каналов =====
+// ===== Отрисовка плитки каналов =====
 function renderGrid() {
   playlistGrid.innerHTML = "";
   const currentGroup = groupFilter.value;
@@ -206,7 +215,7 @@ function renderGrid() {
       tile.appendChild(nameEl);
       if (station.group) tile.appendChild(groupEl);
 
-      // === Пометка недоступных каналов ===
+      // === Пометка нерабочих каналов ===
       if (station.online === false) {
         tile.style.opacity = "0.4";
         tile.title = "Канал недоступен";
@@ -222,7 +231,7 @@ function renderGrid() {
     });
 }
 
-// ===== Открытие плеера =====
+// ===== Открытие канала =====
 function openPlayer(station, index) {
   localStorage.setItem("last_index", index);
   const encodedName = encodeURIComponent(station.name);
@@ -231,7 +240,7 @@ function openPlayer(station, index) {
   window.open(`player.html?name=${encodedName}&url=${encodedUrl}&logo=${encodedLogo}&index=${index}`, "_blank");
 }
 
-// ===== Очистка базы =====
+// ===== Очистка =====
 function clearAutoload() {
   localStorage.removeItem("media_autoload");
   localStorage.removeItem("last_index");
